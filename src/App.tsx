@@ -20,7 +20,7 @@ import {
 
 // Firebase Firestore Imports
 import { collection, doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from './lib/firebase';
+import { db, handleFirestoreError, OperationType, sanitizeData } from './lib/firebase';
 
 // Component imports
 import WaiterApp from './components/WaiterApp';
@@ -396,7 +396,18 @@ export default function App() {
     try {
       const match = tablesAndComandas.find(t => t.id === id);
       if (match) {
-        await setDoc(doc(db, 'tables_comandas', id), { ...match, status });
+        if (status === 'livre') {
+          const cleared: TableOrComanda = {
+            id: match.id,
+            type: match.type,
+            number: match.number,
+            items: [],
+            status: 'livre'
+          };
+          await setDoc(doc(db, 'tables_comandas', id), cleared);
+        } else {
+          await setDoc(doc(db, 'tables_comandas', id), sanitizeData({ ...match, status }));
+        }
       }
     } catch (e) {
       handleFirestoreError(e, OperationType.WRITE, `tables_comandas/${id}`);
@@ -452,8 +463,8 @@ export default function App() {
     };
 
     try {
-      await setDoc(doc(db, 'tables_comandas', tableOrComandaId), refreshedTable);
-      await setDoc(doc(db, 'production_tickets', newTicket.id), newTicket);
+      await setDoc(doc(db, 'tables_comandas', tableOrComandaId), sanitizeData(refreshedTable));
+      await setDoc(doc(db, 'production_tickets', newTicket.id), sanitizeData(newTicket));
     } catch (e) {
       handleFirestoreError(e, OperationType.WRITE, `add_order_flow`);
     }
@@ -532,12 +543,11 @@ export default function App() {
           const originalTable = tablesAndComandas.find(t => t.id === tableOrComandaId);
           if (originalTable) {
             const clearedTable: TableOrComanda = {
-              ...originalTable,
+              id: originalTable.id,
+              type: originalTable.type,
+              number: originalTable.number,
               items: [],
-              status: 'livre',
-              waiterName: undefined,
-              startTime: undefined,
-              customerName: undefined
+              status: 'livre'
             };
             await setDoc(doc(db, 'tables_comandas', tableOrComandaId), clearedTable);
           }
@@ -548,7 +558,7 @@ export default function App() {
           const match = customers.find(c => c.name.toLowerCase() === customerName.toLowerCase() || (cpf && c.cpf === cpf));
           if (match) {
             const updatedCustomer = { ...match, purchaseCount: match.purchaseCount + 1, totalSpent: match.totalSpent + total };
-            await setDoc(doc(db, 'customers', match.id), updatedCustomer);
+            await setDoc(doc(db, 'customers', match.id), sanitizeData(updatedCustomer));
           } else {
             const cstId = 'cst_' + Date.now();
             const newCust: Customer = {
@@ -559,7 +569,7 @@ export default function App() {
               purchaseCount: 1,
               totalSpent: total
             };
-            await setDoc(doc(db, 'customers', cstId), newCust);
+            await setDoc(doc(db, 'customers', cstId), sanitizeData(newCust));
           }
         }
       } catch (e) {
@@ -683,12 +693,17 @@ export default function App() {
       if (!table) return;
 
       const nextLines = table.items.filter((_, i) => i !== idx);
-      const updatedTable: TableOrComanda = {
+      const updatedTable: any = {
         ...table,
         items: nextLines,
         status: nextLines.length === 0 ? 'livre' as const : table.status
       };
-      await setDoc(doc(db, 'tables_comandas', tableId), updatedTable);
+      if (nextLines.length === 0) {
+        delete updatedTable.waiterName;
+        delete updatedTable.startTime;
+        delete updatedTable.customerName;
+      }
+      await setDoc(doc(db, 'tables_comandas', tableId), sanitizeData(updatedTable));
     } catch (e) {
       handleFirestoreError(e, OperationType.WRITE, `tables_comandas/${tableId}`);
     }

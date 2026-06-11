@@ -51,3 +51,27 @@ async function testConnection() {
 }
 
 testConnection();
+
+/**
+ * Recursively removes undefined properties from an object/array so Firestore doesn't fail on write.
+ */
+export function sanitizeData<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return (obj === undefined ? null : obj) as unknown as T;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeData(item)) as unknown as T;
+  }
+  if (typeof obj === 'object') {
+    const result: any = {};
+    Object.keys(obj).forEach(key => {
+      const val = (obj as any)[key];
+      if (val !== undefined) {
+        result[key] = sanitizeData(val);
+      }
+    });
+    return result as T;
+  }
+  return obj;
+}
+
