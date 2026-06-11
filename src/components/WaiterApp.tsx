@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Product, TableOrComanda, CartItem, ProductionTicket, ProductionItem } from '../types';
 import { User, ShoppingBag, Plus, Minus, Send, CheckCircle2, ClipboardList, UtensilsCrossed, FileText, Laptop } from 'lucide-react';
 
+const logoDoisAmores = new URL('../assets/images/dois_amores_logo.jpg', import.meta.url).href;
+
 interface WaiterAppProps {
   products: Product[];
   tablesAndComandas: TableOrComanda[];
@@ -112,12 +114,15 @@ export default function WaiterApp({
           <div className="flex justify-between items-center">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-serif font-bold text-cream-50 tracking-tight">Garçom Bistrô</h1>
+                <div className="h-7 w-7 rounded-full overflow-hidden bg-white flex items-center justify-center border border-stone-700 shadow-sm">
+                  <img src={logoDoisAmores} alt="Dois Amores" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                </div>
+                <h1 className="text-sm font-serif font-bold text-cream-50 tracking-tight">Garçom Dois Amores</h1>
                 <span className={`inline-flex items-center gap-1 text-[8.5px] px-2 py-0.5 rounded-full font-bold uppercase ${
                   dbConnected ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${dbConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                  {dbConnected ? 'CONECTADO EM TEMPO REAL' : 'OFFLINE / ERRO'}
+                  {dbConnected ? 'ONLINE' : 'ERRO'}
                 </span>
               </div>
               <p className="text-[10px] text-stone-400 mt-0.5">Canal de Lançamento Digital Ativo</p>
@@ -400,13 +405,13 @@ export default function WaiterApp({
         <header className="bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 text-stone-100 border-b border-stone-850 sticky top-0 z-50 px-4 py-3 shadow-md">
           <div className="flex justify-between items-center max-w-lg mx-auto">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-full bg-[#d4a373] flex items-center justify-center font-serif text-xs font-black tracking-tight text-stone-950">
-                CB
+              <div className="h-8 w-8 rounded-full overflow-hidden bg-white flex items-center justify-center border border-stone-850 shadow-md">
+                <img src={logoDoisAmores} alt="Dois Amores" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
                   <h1 className="text-xs font-serif font-black tracking-tight leading-none text-white">
-                    Cafeteria Bistrô
+                    Dois Amores
                   </h1>
                   <span className={`w-2 h-2 rounded-full ${dbConnected ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500 animate-pulse'}`} title={dbConnected ? 'Sincronizado em tempo real' : `Erro de sincronização: ${dbError}`} />
                 </div>

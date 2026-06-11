@@ -326,8 +326,8 @@ export default function ProductionDpt({ tickets, onUpdateStatus }: ProductionDpt
               </div>
 
               {/* Footer of the layout */}
-              <div className="text-center text-[9px] text-stone-400 pt-3">
-                SISTEMA INTEGRADO BISTRO MANAGER • COMS
+              <div className="text-center text-[9px] text-[#d4a373] pt-3 font-bold uppercase tracking-wider font-sans">
+                SISTEMA INTEGRADO DOIS AMORES • KDS
               </div>
 
               {/* Prevention cutting mechanism loop */}

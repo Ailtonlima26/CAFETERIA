@@ -22,6 +22,9 @@ import {
 import { collection, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, sanitizeData } from './lib/firebase';
 
+// Logo URL resolution
+const logoDoisAmores = new URL('./assets/images/dois_amores_logo.jpg', import.meta.url).href;
+
 // Component imports
 import WaiterApp from './components/WaiterApp';
 import ProductionDpt from './components/ProductionDpt';
@@ -731,14 +734,19 @@ export default function App() {
       <header className="bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 text-cream-50 border-b border-stone-800 shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="h-11 w-11 rounded-full bg-emerald-700/80 hover:bg-emerald-700 transition flex items-center justify-center font-serif text-lg font-black tracking-tight text-white shadow-inner">
-              CB
+            <div className="h-12 w-12 rounded-full overflow-hidden bg-white flex items-center justify-center border border-stone-800 shadow-lg">
+              <img
+                src={logoDoisAmores}
+                alt="Dois Amores Logo"
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div>
               <h1 className="text-xl font-serif font-black tracking-tight flex items-center gap-2">
-                Cafeteria & Confeitaria Bistrô
-                <span className="text-[10px] bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 font-sans font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  SGC PRO v4.1
+                Dois Amores
+                <span className="text-[10px] bg-amber-600/25 border border-amber-500/30 text-amber-300 font-sans font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  CAFETERIA • BISTRÔ
                 </span>
               </h1>
               <p className="text-[10px] text-stone-400 tracking-wide mt-0.5">ESTABILIZAÇÃO ADMINISTRATIVA CENTRAL E APP DO GARÇOM INTEGRADO</p>
@@ -1247,8 +1255,8 @@ export default function App() {
 
       {/* Footer layout detail */}
       <footer className="bg-stone-50 border-t border-stone-200 mt-12 py-6 text-center text-xs text-stone-400 font-mono tracking-tight">
-        <p>© 2026 CAFETERIA E CONFEITARIA BISTRÔ • CNPJ SIMULADO: 12.345.678/0001-99</p>
-        <p className="mt-1 opacity-75">SISTEMA COMPLETO DE GESTÃO - TODOS OS DIREITOS RESERVADOS</p>
+        <p>© 2026 DOIS AMORES CAFETERIA BISTRÔ • CNPJ SIMULADO: 12.345.678/0001-99</p>
+        <p className="mt-1 opacity-75">SISTEMA COMPLETO DE GESTÃO - DESENVOLVIDO POR PHANTOM-TECNOLIGIA</p>
       </footer>
 
     </div>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { CashierSession, CashierTransaction, TableOrComanda, Product, CartItem, Sale, Customer } from '../types';
 import { DollarSign, ArrowUpRight, ArrowDownLeft, Lock, Unlock, ClipboardList, ShoppingCart, User, Plus, Minus, CreditCard, Receipt } from 'lucide-react';
 
+const logoDoisAmores = new URL('../assets/images/dois_amores_logo.jpg', import.meta.url).href;
+
 interface CashierManagerProps {
   session: CashierSession | null;
   onOpenSession: (initialCash: number) => void;
@@ -225,7 +227,8 @@ export default function CashierManager({
     // Validate custom cash received value
     if (paymentMethod === 'Dinheiro') {
       const total = getCheckoutTotal();
-      const received = parseFloat(cashReceived) || 0;
+      // Se não digitou nada (deixou em branco), assume o valor exato para facilitar e não bloquear!
+      const received = cashReceived.trim() === '' ? total : (parseFloat(cashReceived) || 0);
       if (received < total) {
         alert(`O valor em dinheiro pago pelo cliente (R$ ${received.toFixed(2)}) é menor que o total do consumo (R$ ${total.toFixed(2)}).`);
         return;
@@ -637,7 +640,10 @@ export default function CashierManager({
                     {/* Change due calculations if money */}
                     {paymentMethod === 'Dinheiro' && (
                       <div className="space-y-2 pt-2 border-t text-xs">
-                        <label className="block font-semibold text-stone-700">Valor Entregue pelo Cliente (R$):</label>
+                        <div className="flex justify-between items-center">
+                          <label className="font-semibold text-stone-700">Valor Entregue pelo Cliente (R$):</label>
+                          <span className="text-[10px] text-stone-400 font-mono">(Deixe em branco para valor exato)</span>
+                        </div>
                         <input
                           type="number"
                           step="0.01"
@@ -646,6 +652,34 @@ export default function CashierManager({
                           onChange={e => setCashReceived(e.target.value)}
                           className="w-full bg-stone-50 p-2.5 border border-stone-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-stone-600 text-sm font-bold"
                         />
+                        
+                        {/* Botões de atalho rápido de valor */}
+                        <div className="flex gap-1.5 flex-wrap pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setCashReceived(getCheckoutTotal().toFixed(2))}
+                            className="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-lg text-[10px] transition border border-stone-200"
+                          >
+                            Valor Exato (R$ {getCheckoutTotal().toFixed(2)})
+                          </button>
+                          {[10, 20, 50, 100, 200].map(val => {
+                            const total = getCheckoutTotal();
+                            if (val >= total) {
+                              return (
+                                <button
+                                  key={val}
+                                  type="button"
+                                  onClick={() => setCashReceived(val.toFixed(2))}
+                                  className="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-lg text-[10px] transition border border-stone-200"
+                                >
+                                  R$ {val.toFixed(2)}
+                                </button>
+                              );
+                            }
+                            return null;
+                          })}
+                        </div>
+
                         {parseFloat(cashReceived) > 0 && (
                           <div className="flex justify-between items-center p-2.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl mt-2">
                             <span className="font-semibold text-[10px]">TROCO CALCULADO:</span>
@@ -732,9 +766,16 @@ export default function CashierManager({
                     lineHeight: '1.2'
                   }}
                 >
-                  <div className="text-center font-bold text-stone-950 pb-2 border-b border-dashed border-stone-300">
-                    <p className="text-sm font-sans tracking-tight uppercase leading-tight font-black">{customHeader}</p>
-                    <p className="text-[9px] font-normal text-stone-400 font-sans">AV. PAULISTA, 1000 - SÃO PAULO/SP</p>
+                  <div className="text-center pb-2 border-b border-dashed border-stone-300">
+                    <img
+                      src={logoDoisAmores}
+                      alt="Dois Amores Logo"
+                      className="h-14 w-14 rounded-full object-cover mx-auto mb-1.5 border border-stone-250 bg-white"
+                      referrerPolicy="no-referrer"
+                    />
+                    <p className="text-sm font-sans tracking-tight uppercase leading-tight font-black">Dois Amores</p>
+                    <p className="text-[8px] font-sans tracking-widest text-amber-700 font-bold uppercase -mt-0.5 leading-none">Cafeteria • Confeitaria • Bistrô</p>
+                    <p className="text-[9px] font-normal text-stone-400 font-sans mt-1">AV. PAULISTA, 1000 - SÃO PAULO/SP</p>
                     <p className="text-[9px] font-normal text-stone-400 font-sans">CNPJ: 12.345.678/0001-99</p>
                   </div>
 
