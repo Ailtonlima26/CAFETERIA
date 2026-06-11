@@ -1,0 +1,6 @@
+{
+  "name": "Cafeteria e Confeitaria Bistrô",
+  "description": "Sistema completo de gestão com controle de mesas/comandas, caixa, relatórios, estoque, compras via XML, financeiro, emissão fiscal e aplicativo de garçom.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

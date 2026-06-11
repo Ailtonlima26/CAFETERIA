@@ -1,0 +1,146 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Store item catalog details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "costPrice": { "type": "number" },
+        "stock": { "type": "number" },
+        "minStock": { "type": "number" },
+        "unit": { "type": "string" },
+        "ncm": { "type": "string" },
+        "cfop": { "type": "string" },
+        "department": { "type": "string" }
+      },
+      "required": ["id", "name", "category", "price", "stock", "department"]
+    },
+    "TableOrComanda": {
+      "title": "TableOrComanda",
+      "description": "Dining room table or individual client comanda card",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "number": { "type": "string" },
+        "status": { "type": "string" },
+        "waiterName": { "type": "string" },
+        "startTime": { "type": "string" },
+        "customerName": { "type": "string" }
+      },
+      "required": ["id", "type", "number", "status"]
+    },
+    "ProductionTicket": {
+      "title": "ProductionTicket",
+      "description": "Department dispatch ticket (Kitchen, Coffee Bar, Bakery)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tableNumber": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "waiterName": { "type": "string" }
+      },
+      "required": ["id", "tableNumber", "type", "status", "timestamp"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Registered buyer CRM log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "cpf": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "birthday": { "type": "string" },
+        "purchaseCount": { "type": "number" },
+        "totalSpent": { "type": "number" }
+      },
+      "required": ["id", "name", "birthday", "purchaseCount", "totalSpent"]
+    },
+    "FinancialRecord": {
+      "title": "FinancialRecord",
+      "description": "Accounts payable or receivable entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "status": { "type": "string" },
+        "paymentDate": { "type": "string" }
+      },
+      "required": ["id", "description", "type", "amount", "dueDate", "status"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Closed financial transaction registry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "total": { "type": "number" },
+        "profit": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "customerName": { "type": "string" },
+        "cashierSessionId": { "type": "string" },
+        "taxEmitted": { "type": "boolean" },
+        "cpf": { "type": "string" },
+        "nfeNumber": { "type": "string" }
+      },
+      "required": ["id", "total", "paymentMethod", "timestamp", "cashierSessionId"]
+    },
+    "CashierSession": {
+      "title": "CashierSession",
+      "description": "Open daily safe and registers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string" },
+        "openTime": { "type": "string" },
+        "closeTime": { "type": "string" },
+        "initialCash": { "type": "number" },
+        "finalCash": { "type": "number" }
+      },
+      "required": ["id", "status", "openTime", "initialCash"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Interactive stock catalogue with margins and departments"
+    },
+    "/tables_comandas/{id}": {
+      "schema": "TableOrComanda",
+      "description": "Real-time table/comanda list including unconfirmed/active items"
+    },
+    "/production_tickets/{id}": {
+      "schema": "ProductionTicket",
+      "description": "Kitchen and barista active dispatch orders"
+    },
+    "/customers/{id}": {
+      "schema": "Customer",
+      "description": "CRM client database for birthdays and spending histories"
+    },
+    "/financial_records/{id}": {
+      "schema": "FinancialRecord",
+      "description": "Ledger with due dates and pay status logs"
+    },
+    "/sales/{id}": {
+      "schema": "Sale",
+      "description": "Total historical transactional receipts"
+    },
+    "/cashier_sessions/{id}": {
+      "schema": "CashierSession",
+      "description": "Daily cashier logs containing details of drawers, intakes and floats"
+    }
+  }
+}

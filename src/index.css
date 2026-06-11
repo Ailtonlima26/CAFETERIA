@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-stone-50: #f8f7f5;
+  --color-stone-100: #e5e1da;
+  --color-stone-200: #dcd7ce;
+  --color-stone-300: #cbc4b6;
+  --color-stone-400: #8b7e74;
+  --color-stone-500: #6b635c;
+  --color-stone-600: #5c4f45;
+  --color-stone-700: #483d35;
+  --color-stone-800: #3a2f27;
+  --color-stone-850: #31261f;
+  --color-stone-900: #2d241e;
+  --color-stone-950: #251d18;
+
+  --color-emerald-50: #fdf2e9;
+  --color-emerald-150: #f7e6d7;
+  --color-emerald-300: #eac098;
+  --color-emerald-400: #d4a373;
+  --color-emerald-600: #e5b282;
+  --color-emerald-700: #d4a373;
+  --color-emerald-800: #bfa280;
+}
+
+/* Custom visual layout enhancement for scrollbars if needed */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* HIGH FIDELITY THERMAL RECEIPT PRINTING DRIVER CSS */
+@media print {
+  /* Hide standard window elements */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'JetBrains Mono', 'Courier New', Courier, monospace !important;
+    font-size: 11px !important;
+  }
+
+  /* Block default brown/creamy backgrounds */
+  div, header, nav, main, button, section, p, span {
+    background: transparent !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hide absolutely everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Expose ONLY the specific thermal ticket area */
+  .print-thermal-source, .print-thermal-source * {
+    visibility: visible;
+  }
+
+  .print-thermal-source {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Paper roll size customization */
+  @page {
+    size: auto;
+    margin: 0 !important;
+  }
+
+  /* Hide scrollbars during print */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+}

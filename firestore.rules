@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny gate
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: generic check for sane string sizes
+    function isSaneString(val, max_size) {
+      return val is string && val.size() <= max_size;
+    }
+
+    // Helper: validates ID names
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    // Collection: Products
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isValidId(id) && request.resource.data.name is string && request.resource.data.name.size() <= 200;
+    }
+
+    // Collection: Tables and Comandas
+    match /tables_comandas/{id} {
+      allow read: if true;
+      allow write: if isValidId(id);
+    }
+
+    // Collection: Production Tickets
+    match /production_tickets/{id} {
+      allow read: if true;
+      allow write: if isValidId(id);
+    }
+
+    // Collection: Customers CRM
+    match /customers/{id} {
+      allow read: if true;
+      allow write: if isValidId(id) && request.resource.data.name is string && request.resource.data.name.size() <= 200;
+    }
+
+    // Collection: Financial Ledger
+    match /financial_records/{id} {
+      allow read: if true;
+      allow write: if isValidId(id);
+    }
+
+    // Collection: Sales records
+    match /sales/{id} {
+      allow read: if true;
+      allow write: if isValidId(id);
+    }
+
+    // Collection: Cashier Sessions
+    match /cashier_sessions/{id} {
+      allow read: if true;
+      allow write: if isValidId(id);
+    }
+  }
+}
