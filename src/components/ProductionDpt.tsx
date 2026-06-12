@@ -2,6 +2,155 @@ import React, { useState } from 'react';
 import { ProductionTicket, ProductionItem } from '../types';
 import { Printer, Check, Clock, Utensils, Coffee, Cake, Bell } from 'lucide-react';
 
+// Complete high-fidelity programmatic thermal printing driver
+const printElementProgrammatically = (elementId: string, paperWidth: '80mm' | '58mm') => {
+  const el = document.getElementById(elementId);
+  if (!el) {
+    window.print();
+    return;
+  }
+
+  // Create isolated programmatical iframe inside body
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow?.document || iframe.contentDocument;
+  if (doc) {
+    doc.open();
+    doc.write(`
+      <html>
+        <head>
+          <title>Impressao de Cupom</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+            body {
+              font-family: 'JetBrains Mono', monospace;
+              margin: 0;
+              padding: 4px;
+              background-color: #fff;
+              color: #000;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: bold; }
+            .font-semibold { font-weight: 600; }
+            .font-medium { font-weight: 500; }
+            .font-black { font-weight: 950; }
+            .font-sans { font-family: sans-serif; }
+            .font-mono { font-family: 'JetBrains Mono', monospace; }
+            .uppercase { text-transform: uppercase; }
+            .tracking-tight { letter-spacing: -0.025em; }
+            .tracking-widest { letter-spacing: 0.1em; }
+            .leading-tight { line-height: 1.25; }
+            .leading-none { line-height: 1; }
+            .text-sm { font-size: 14px; }
+            .text-xs { font-size: 12px; }
+            .text-\\[11px\\] { font-size: 11px; }
+            .text-\[11px\] { font-size: 11px; }
+            .text-\\[9px\\] { font-size: 9px; }
+            .text-\[9px\] { font-size: 9px; }
+            .text-\\[8px\\] { font-size: 8px; }
+            .text-\[8px\] { font-size: 8px; }
+            .text-\\[10px\\] { font-size: 10px; }
+            .text-\[10px\] { font-size: 10px; }
+            .text-stone-400 { color: #888; }
+            .text-stone-500 { color: #666; }
+            .text-stone-600 { color: #555; }
+            .text-stone-750 { color: #2d241e; }
+            .text-stone-800 { color: #2d241e; }
+            .text-stone-900 { color: #111; }
+            .text-rose-600 { color: #dc2626; }
+            .text-amber-700 { color: #b45309; }
+            .text-emerald-800 { color: #065f46; }
+            .border-b { border-bottom: 2px solid #000; }
+            .border-b-2 { border-bottom: 2px solid #000; }
+            .border-dashed { border-style: dashed; }
+            .border-stone-300 { border-color: #999; }
+            .py-2 { padding-top: 8px; padding-bottom: 8px; }
+            .py-2\\.5 { padding-top: 10px; padding-bottom: 10px; }
+            .py-3 { padding-top: 12px; padding-bottom: 12px; }
+            .py-0\\.5 { padding-top: 2px; padding-bottom: 2px; }
+            .pb-2 { padding-bottom: 8px; }
+            .mb-1\\.5 { margin-bottom: 6px; }
+            .mt-1 { margin-top: 4px; }
+            .mt-2 { margin-top: 8px; }
+            .mt-2\\.5 { margin-top: 10px; }
+            .mx-auto { margin-left: auto; margin-right: auto; }
+            .h-14 { height: 56px; }
+            .w-14 { width: 56px; }
+            .h-4 { height: 16px; }
+            .rounded-full { border-radius: 9999px; }
+            .object-cover { object-fit: cover; }
+            .flex { display: flex; }
+            .flex-col { flex-direction: column; }
+            .justify-between { justify-content: space-between; }
+            .tabular-nums { font-variant-numeric: tabular-nums; }
+            .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .max-w-\\[130px\\] { max-width: 130px; }
+            .break-all { word-break: break-all; }
+            .space-y-0\\.5 > * + * { margin-top: 2px; }
+            .space-y-1 > * + * { margin-top: 4px; }
+            .space-y-2 > * + * { margin-top: 8px; }
+            .bg-stone-200 { background-color: #eee; }
+            .bg-stone-50 { background-color: #f9f9f9; }
+            .border { border: 1px solid #000; }
+            .whitespace-pre-line { white-space: pre-line; }
+            .text-[#d4a373] { color: #d4a373; }
+            @media print {
+              body { padding: 0; margin: 0; }
+              @page { margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div style="width: ${paperWidth === '58mm' ? '54mm' : '76mm'}; margin: 0 auto;">
+            ${el.innerHTML}
+          </div>
+          <script>
+            // Wait for images to load completely before printing
+            const imgs = document.getElementsByTagName('img');
+            let loadedCount = 0;
+            if (imgs.length === 0) {
+              triggerPrint();
+            } else {
+              for (let i = 0; i < imgs.length; i++) {
+                if (imgs[i].complete) {
+                  incrementCounter();
+                } else {
+                  imgs[i].addEventListener('load', incrementCounter);
+                  imgs[i].addEventListener('error', incrementCounter);
+                }
+              }
+            }
+            function incrementCounter() {
+              loadedCount++;
+              if (loadedCount === imgs.length) {
+                triggerPrint();
+              }
+            }
+            function triggerPrint() {
+              setTimeout(function() {
+                window.print();
+                setTimeout(function() {
+                  window.frameElement.remove();
+                }, 1000);
+              }, 150);
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    doc.close();
+  }
+};
+
 interface ProductionDptProps {
   tickets: ProductionTicket[];
   onUpdateStatus: (ticketId: string, status: 'pendente' | 'preparando' | 'pronto' | 'entregue') => void;
@@ -49,8 +198,8 @@ export default function ProductionDpt({ tickets, onUpdateStatus }: ProductionDpt
     setPrintedReceipt(ticket);
     speakAlert(`Imprimindo pedido do ${ticket.tableNumber}`);
     setTimeout(() => {
-      // Simulate real browser print window but inside styled overlay
-    }, 200);
+      printElementProgrammatically('kitchen-receipt-printable', paperWidth);
+    }, 500);
   };
 
   return (
@@ -285,6 +434,7 @@ export default function ProductionDpt({ tickets, onUpdateStatus }: ProductionDpt
 
             {/* Thermal Slip mockup */}
             <div 
+              id="kitchen-receipt-printable"
               className="bg-stone-50/70 border p-5 rounded-lg font-mono text-xs text-stone-800 shadow-inner relative print-thermal-source print:max-h-none print:overflow-visible print:border-none print:p-0 print:shadow-none print:bg-white"
               style={{
                 width: paperWidth === '58mm' ? '54mm' : '76mm',
@@ -344,7 +494,7 @@ export default function ProductionDpt({ tickets, onUpdateStatus }: ProductionDpt
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => {
-                  window.print();
+                  printElementProgrammatically('kitchen-receipt-printable', paperWidth);
                 }}
                 className="flex-grow py-3 bg-stone-900 text-white rounded-xl text-xs font-bold hover:bg-stone-800 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                 id="btn-print-hardware"

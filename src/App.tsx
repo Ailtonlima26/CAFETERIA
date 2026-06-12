@@ -32,6 +32,7 @@ import CashierManager from './components/CashierManager';
 import StockManager from './components/StockManager';
 import FinanceManager from './components/FinanceManager';
 import ReportsManager from './components/ReportsManager';
+import LoginScreen from './components/LoginScreen';
 
 // Lucide icons
 import {
@@ -48,7 +49,9 @@ import {
   FileText,
   User,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  LogOut,
+  Lock
 } from 'lucide-react';
 
 export default function App() {
@@ -91,16 +94,46 @@ export default function App() {
   // Navigation Panel tab
   const [activeTab, setActiveTab] = useState<'salao' | 'waiter-app' | 'producao' | 'caixa' | 'estoque' | 'financeiro' | 'relatorios'>('salao');
 
-  // Standalone app mode: 'admin' (complete control panel) or 'waiter' (exclusive full-screen waiter app)
-  const [appMode, setAppMode] = useState<'admin' | 'waiter'>(() => {
+  // Standalone app mode: 'admin' (complete control panel), 'waiter' (exclusive full-screen waiter app), or 'kitchen' (exclusive full-screen kitchen KDS)
+  const [appMode, setAppMode] = useState<'admin' | 'waiter' | 'kitchen'>(() => {
     const params = new URLSearchParams(window.location.search);
-    const m = params.get('mode') || params.get('view');
+    const m = params.get('mode') || params.get('view') || params.get('role');
     if (m === 'waiter' || m === 'garcom') {
       return 'waiter';
     }
+    if (m === 'kitchen' || m === 'cozinha' || m === 'producao') {
+      return 'kitchen';
+    }
     const saved = localStorage.getItem('bistro_app_mode');
-    return saved === 'waiter' ? 'waiter' : 'admin';
+    return (saved === 'waiter' || saved === 'kitchen') ? saved : 'admin';
   });
+
+  // Authentication State Sincronizado
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    const saved = localStorage.getItem('bistro_logged_in');
+    return saved === 'true';
+  });
+
+  const [loggedUserName, setLoggedUserName] = useState<string>(() => {
+    return localStorage.getItem('bistro_logged_user_name') || '';
+  });
+
+  const handleLogin = (userName: string, role: 'admin' | 'waiter' | 'kitchen') => {
+    setIsLoggedIn(true);
+    setLoggedUserName(userName);
+    localStorage.setItem('bistro_logged_in', 'true');
+    localStorage.setItem('bistro_logged_user_name', userName);
+    localStorage.setItem('bistro_user_role', role);
+    setAppMode(role);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setLoggedUserName('');
+    localStorage.setItem('bistro_logged_in', 'false');
+    localStorage.removeItem('bistro_logged_user_name');
+    localStorage.removeItem('bistro_user_role');
+  };
 
   const [linkCopied, setLinkCopied] = useState(false);
   const [dbConnected, setDbConnected] = useState<boolean>(true);
@@ -712,6 +745,10 @@ export default function App() {
     }
   };
 
+  if (!isLoggedIn) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
   if (appMode === 'waiter') {
     return (
       <WaiterApp
@@ -723,7 +760,70 @@ export default function App() {
         onExitStandalone={() => setAppMode('admin')}
         dbConnected={dbConnected}
         dbError={dbError}
+        loggedWaiterName={loggedUserName}
+        onLogout={handleLogout}
       />
+    );
+  }
+
+  if (appMode === 'kitchen') {
+    return (
+      <div className="min-h-screen bg-stone-100 flex flex-col justify-between select-none">
+        <header className="bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 text-cream-50 border-b border-stone-800 shadow-xl">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="h-10 w-10 rounded-full overflow-hidden bg-white flex items-center justify-center border border-stone-800 shadow-md">
+                <img
+                  src={logoDoisAmores}
+                  alt="Dois Amores Logo"
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div>
+                <h1 className="text-base font-serif font-black tracking-tight flex items-center gap-2">
+                  Dois Amores • Cozinha KDS
+                  <span className="text-[9px] bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 font-sans font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    PRODUÇÃO ATIVA
+                  </span>
+                </h1>
+                <p className="text-[9px] text-stone-400 tracking-wide mt-0.5">FILA DE PREPARO SINCRO EM TEMPO REAL</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 text-xs bg-stone-900 px-3.5 py-1.5 rounded-xl border border-stone-850">
+                <div className="h-5 w-5 rounded-full bg-emerald-500 text-stone-950 flex items-center justify-center font-black text-[9px] animate-pulse">
+                  ✓
+                </div>
+                <div className="text-left">
+                  <span className="text-stone-200 font-bold block leading-none">{loggedUserName}</span>
+                  <span className="text-[7px] text-[#d4a373] font-mono tracking-widest font-black uppercase">CHEFE DE SEÇÃO</span>
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="text-stone-400 hover:text-rose-400 transition p-1 cursor-pointer active:scale-95 ml-2.5"
+                  title="Sair do Sistema"
+                  id="btn-kitchen-logout"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+          <ProductionDpt
+            tickets={productionTickets}
+            onUpdateStatus={handleUpdateProductionStatus}
+          />
+        </main>
+
+        <footer className="py-4 text-center text-[10px] font-mono text-stone-450 border-t border-stone-200 bg-white">
+          SISTEMA DE PRODUÇÃO INTEGRADO KDS • DESENVOLVIDO POR <b className="text-stone-700 font-extrabold pb-0.5">PHANTOM-TECNOLOGIA</b> • v1.2.0
+        </footer>
+      </div>
     );
   }
 
@@ -771,6 +871,27 @@ export default function App() {
               <span className="text-[11px] font-bold text-stone-300 uppercase tracking-wider">
                 {cashierSession ? `Caixa Aberto • R$ ${cashierSession.initialCash.toFixed(2)} Initial` : 'Caixa Diário Fechado'}
               </span>
+            </div>
+
+            {/* Logged user profile widget & logout */}
+            <div className="h-4 w-px bg-stone-800 hidden sm:block"></div>
+
+            <div className="flex items-center gap-3 text-xs bg-stone-900 px-3 py-1.5 rounded-xl border border-stone-850">
+              <div className="h-6 w-6 rounded-full bg-[#d4a373] text-stone-950 flex items-center justify-center font-black text-[10.5px]">
+                {loggedUserName ? loggedUserName.charAt(0) : 'A'}
+              </div>
+              <div className="hidden lg:block text-left">
+                <span className="text-stone-200 font-bold block leading-none">{loggedUserName}</span>
+                <span className="text-[8px] text-[#d4a373] font-mono tracking-widest font-black uppercase">ONLINE</span>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="text-stone-400 hover:text-rose-400 transition p-1 cursor-pointer active:scale-95"
+                title="Sair do Sistema"
+                id="btn-admin-logout"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
         </div>
@@ -1195,6 +1316,8 @@ export default function App() {
                   onSetTableStatus={handleSetTableStatus}
                   dbConnected={dbConnected}
                   dbError={dbError}
+                  loggedWaiterName={loggedUserName}
+                  onLogout={handleLogout}
                 />
               </div>
 

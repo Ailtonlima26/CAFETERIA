@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product, TableOrComanda, CartItem, ProductionTicket, ProductionItem } from '../types';
-import { User, ShoppingBag, Plus, Minus, Send, CheckCircle2, ClipboardList, UtensilsCrossed, FileText, Laptop } from 'lucide-react';
+import { User, ShoppingBag, Plus, Minus, Send, CheckCircle2, ClipboardList, UtensilsCrossed, FileText, Laptop, LogOut } from 'lucide-react';
 
 const logoDoisAmores = new URL('../assets/images/dois_amores_logo.jpg', import.meta.url).href;
 
@@ -13,9 +13,11 @@ interface WaiterAppProps {
   onExitStandalone?: () => void;
   dbConnected?: boolean;
   dbError?: string | null;
+  loggedWaiterName?: string;
+  onLogout?: () => void;
 }
 
-const REGISTERED_WAITERS = ['Carlos Silva', 'Marta Souza', 'Letícia Cruz', 'Rodrigo Melo'];
+const REGISTERED_WAITERS = ['Amanda Souza', 'Bruno Silva', 'Lucas Oliveira', 'Juliana Santos', 'Pedro Costa', 'Chef Helena'];
 
 export default function WaiterApp({
   products,
@@ -25,9 +27,13 @@ export default function WaiterApp({
   isStandalone = false,
   onExitStandalone,
   dbConnected = true,
-  dbError = null
+  dbError = null,
+  loggedWaiterName = '',
+  onLogout
 }: WaiterAppProps) {
-  const [currentWaiter, setCurrentWaiter] = useState<string>('');
+  const [currentWaiter, setCurrentWaiter] = useState<string>(() => {
+    return loggedWaiterName || '';
+  });
   const [newWaiterName, setNewWaiterName] = useState<string>('');
   const [waiterList, setWaiterList] = useState<string[]>(REGISTERED_WAITERS);
   
@@ -430,9 +436,19 @@ export default function WaiterApp({
               {onExitStandalone && (
                 <button
                   onClick={onExitStandalone}
-                  className="px-2.5 py-1 bg-stone-800 hover:bg-stone-750 text-stone-200 border border-stone-700 rounded-full text-[10px] font-bold transition flex items-center gap-1 active:scale-95"
+                  className="px-2 py-1 bg-stone-800 hover:bg-stone-750 text-stone-200 border border-stone-700 rounded-full text-[10px] h-7 w-7 flex items-center justify-center font-bold transition active:scale-95"
+                  title="Painel de Gestão"
                 >
-                  <Laptop className="h-3 w-3 text-[#d4a373]" /> Gestão
+                  <Laptop className="h-3.5 w-3.5 text-[#d4a373]" />
+                </button>
+              )}
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="px-2 py-1 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-900/45 rounded-full text-[10px] h-7 w-7 flex items-center justify-center font-bold transition active:scale-95"
+                  title="Sair do Sistema"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
